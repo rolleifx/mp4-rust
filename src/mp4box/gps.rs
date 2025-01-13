@@ -106,12 +106,10 @@ mod tests {
     fn test_gps() {
         let src_box = GpsBox {
             version_and_date: 12345678,
-            data_blocks: vec![
-                GpsDataBlockInfo {
-                    offset: 100,
-                    size: 256,
-                }
-            ],
+            data_blocks: vec![GpsDataBlockInfo {
+                offset: 100,
+                size: 256,
+            }],
         };
         let mut buf = Vec::new();
         src_box.write_box(&mut buf).unwrap();
