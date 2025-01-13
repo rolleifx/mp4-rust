@@ -173,18 +173,6 @@ impl<R: Read + Seek> Mp4Reader<R> {
             Err(Error::TrakNotFound(track_id))
         }
     }
-
-    pub fn into_inner(self) -> R {
-        self.reader
-    }
-
-    pub fn gps_box(&mut self) -> Option<GpsBox> {
-        if self.moov.gps.is_some() {
-            self.moov.gps.clone()
-        } else {
-            None
-        }
-    }
 }
 
 impl<R> Mp4Reader<R> {
