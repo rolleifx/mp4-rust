@@ -99,5 +99,46 @@ impl<W: Write> WriteBox<&mut W> for GpsBox {
 
 #[cfg(test)]
 mod tests {
-    // TODO
+    use super::*;
+    use std::io::Cursor;
+
+    #[test]
+    fn test_gps() {
+        let src_box = GpsBox {
+            version_and_date: 12345678,
+            data_blocks: vec![
+                GpsDataBlockInfo {
+                    offset: 100,
+                    size: 256,
+                }
+            ],
+        };
+        let mut buf = Vec::new();
+        src_box.write_box(&mut buf).unwrap();
+        assert_eq!(buf.len(), src_box.box_size() as usize);
+
+        let mut reader = Cursor::new(&buf);
+        let header = BoxHeader::read(&mut reader).unwrap();
+        assert_eq!(header.name, BoxType::GpsBox);
+        assert_eq!(src_box.box_size(), header.size);
+
+        let dst_box = GpsBox::read_box(&mut reader, header.size).unwrap();
+        assert_eq!(src_box, dst_box);
+    }
+
+    #[test]
+    fn test_gps_empty() {
+        let src_box = GpsBox::default();
+        let mut buf = Vec::new();
+        src_box.write_box(&mut buf).unwrap();
+        assert_eq!(buf.len(), src_box.box_size() as usize);
+
+        let mut reader = Cursor::new(&buf);
+        let header = BoxHeader::read(&mut reader).unwrap();
+        assert_eq!(header.name, BoxType::GpsBox);
+        assert_eq!(src_box.box_size(), header.size);
+
+        let dst_box = GpsBox::read_box(&mut reader, header.size).unwrap();
+        assert_eq!(src_box, dst_box);
+    }
 }
